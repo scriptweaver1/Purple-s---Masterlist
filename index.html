@@ -164,6 +164,63 @@
     }
     .search-input::placeholder { color:rgba(196,181,253,0.45); }
     .search-input:focus { border-color:var(--amethyst); background:rgba(45,27,82,0.7); box-shadow:0 0 20px var(--glow-soft); }
+
+    /* ─── Tag autocomplete dropdown ─── */
+    .search-suggestions {
+        position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:500;
+        background:rgba(22,13,40,0.97); border:1px solid rgba(139,92,246,0.4);
+        border-radius:14px; padding:0.4rem; list-style:none;
+        box-shadow:0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(196,181,253,0.06);
+        backdrop-filter:blur(16px); max-height:260px; overflow-y:auto;
+        display:none;
+        scrollbar-width:thin; scrollbar-color:rgba(139,92,246,0.4) transparent;
+    }
+    .search-suggestions.open { display:block; animation:suggestIn 0.15s ease; }
+    @keyframes suggestIn {
+        from { opacity:0; transform:translateY(-6px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    .suggest-item {
+        display:flex; align-items:center; gap:0.6rem;
+        padding:0.5rem 0.8rem; border-radius:9px; cursor:pointer;
+        font-size:0.8rem; color:var(--lavender); transition:all 0.15s;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .suggest-item:hover, .suggest-item.focused {
+        background:rgba(139,92,246,0.22); color:var(--petal-white);
+    }
+    .suggest-item .suggest-icon { font-size:0.65rem; color:var(--amethyst); flex-shrink:0; }
+    .suggest-item em { font-style:normal; color:var(--wisteria); font-weight:700; }
+    .suggest-count {
+        margin-left:auto; font-size:0.65rem; color:rgba(167,139,250,0.5);
+        background:rgba(74,31,168,0.3); border-radius:8px; padding:0.1rem 0.45rem; flex-shrink:0;
+    }
+
+    /* ─── Active tag chip below search ─── */
+    .active-tag-bar {
+        display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;
+        padding:0.5rem 1.1rem 0; min-height:0; transition:all 0.2s;
+    }
+    .active-tag-bar:empty { padding:0; }
+    .active-tag-label { font-size:0.68rem; color:rgba(167,139,250,0.5); letter-spacing:0.06em; }
+    .active-tag-chip {
+        display:inline-flex; align-items:center; gap:0.4rem;
+        padding:0.25rem 0.5rem 0.25rem 0.75rem;
+        background:linear-gradient(135deg,rgba(109,40,217,0.45),rgba(139,92,246,0.32));
+        border:1px solid rgba(167,139,250,0.5); border-radius:20px;
+        font-size:0.73rem; color:var(--petal-white); font-weight:600;
+        animation:chipIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes chipIn {
+        from { opacity:0; transform:scale(0.7); }
+        to   { opacity:1; transform:scale(1); }
+    }
+    .active-tag-chip button {
+        background:none; border:none; cursor:pointer; color:var(--wisteria);
+        font-size:0.75rem; padding:0; line-height:1; display:flex; align-items:center;
+        transition:color 0.15s;
+    }
+    .active-tag-chip button:hover { color:var(--petal-white); }
     .header-right { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
     .header-socials { display:flex; gap:0.45rem; }
     .social-icon {
@@ -351,6 +408,25 @@
        STATES
     ═══════════════════════════════════════════ */
     .loading-state,.error-state,.empty-state { grid-column:1/-1; text-align:center; padding:5rem 2rem; display:flex; flex-direction:column; align-items:center; gap:1.2rem; }
+
+    /* ─── Smart search divider ─── */
+    .related-divider {
+        grid-column: 1/-1;
+        display: flex; align-items: center; gap: 1rem;
+        padding: 0.6rem 0 0.2rem;
+    }
+    .related-divider::before, .related-divider::after {
+        content: ''; flex: 1; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+    }
+    .related-divider-label {
+        font-family: var(--font-accent); font-size: 0.65rem; letter-spacing: 0.25em;
+        text-transform: uppercase; color: rgba(167,139,250,0.5); white-space: nowrap;
+        padding: 0.28rem 0.9rem; border-radius: 20px;
+        border: 1px solid rgba(139,92,246,0.2); background: rgba(45,27,82,0.3);
+    }
+    .card-related { opacity: 0.72; }
+    .card-related:hover { opacity: 1; }
     .loading-spinner { width:46px; height:46px; border-radius:50%; border:3px solid rgba(139,92,246,0.2); border-top-color:var(--amethyst); animation:spin 0.9s linear infinite; }
     @keyframes spin { to{transform:rotate(360deg)} }
     .loading-state p,.empty-state p { color:var(--wisteria); font-size:0.93rem; }
@@ -416,6 +492,7 @@
         .a11y-panel { width:100%; }
         .section-header { flex-direction:column; align-items:flex-start; }
         .section-controls { flex-wrap:wrap; }
+        .view-controls { display:none; }
     }
     </style>
 </head>
@@ -486,6 +563,7 @@
             <span class="search-icon">🔍</span>
             <input type="text" class="search-input" id="searchInput"
                    placeholder="Search titles, tags, synopses…" autocomplete="off">
+            <ul class="search-suggestions" id="searchSuggestions" role="listbox"></ul>
         </div>
 
         <div class="header-right">
@@ -531,6 +609,7 @@
             <button class="accessibility-btn" id="a11yBtn" title="Accessibility settings">Aa</button>
         </div>
     </div>
+    <div class="active-tag-bar" id="activeTagBar"></div>
 </header>
 
 <!-- ── MAIN ────────────────────────────────── -->
@@ -717,22 +796,334 @@ function doSort(list) {
     return a;
 }
 
+/* ═══════════════════════════════════════════
+   SMART SEARCH ENGINE
+═══════════════════════════════════════════ */
+
+/**
+ * Normalize a tag to a canonical key for comparison.
+ * Strips case, spaces, hyphens, punctuation, trailing 's' for plurals.
+ */
+function normKey(str) {
+    return str.toLowerCase()
+        .replace(/[''""]/g, '')         // smart quotes
+        .replace(/[^a-z0-9]/g, '')      // all non-alphanumeric
+        .replace(/s$/, '');             // naive depluralize
+}
+
+/**
+ * SYNONYM MAP: maps variant keys → canonical key.
+ * Built from the actual tag vocabulary in this dataset.
+ */
+const SYNONYMS = (() => {
+    const m = {};
+    const pairs = [
+        // ─ Blowjob / oral (giving) ─
+        ['blowjob','blowjob'],['blowjobs','blowjob'],['blowjob','blowjob'],
+        ['blowjob','blowjob'],['blowjob','blowjob'],['blojob','blowjob'],
+        ['bj','blowjob'],['bjob','blowjob'],['blow job','blowjob'],
+        ['sloppyblowjob','blowjob'],['sloppybj','blowjob'],
+        // ─ Deepthroat ─
+        ['deepthroat','deepthroat'],['deepthroating','deepthroat'],
+        ['deep throat','deepthroat'],['deep throating','deepthroat'],
+        ['deepthroated','deepthroat'],['deepthoat','deepthroat'],
+        ['deepthroat','deepthroat'],['gooey throat cock worship','deepthroat'],
+        // ─ Facefuck ─
+        ['facefuck','facefuck'],['facefucking','facefuck'],
+        ['face fucking','facefuck'],['face fuck','facefuck'],
+        ['face fucked','facefuck'],['shoving your anger down her throat','facefuck'],
+        // ─ Throatpie ─
+        ['throatpie','throatpie'],['throat pie','throatpie'],
+        ['clean up blowjob','throatpie'],
+        // ─ Handjob ─
+        ['handjob','handjob'],['hand job','handjob'],['handJob','handjob'],
+        ['hands job','handjob'],['milking handjob','handjob'],
+        ['nursing handjob','handjob'],['nursing hand job','handjob'],
+        ['sloppy handjob','handjob'],
+        // ─ Cunnilingus / pussy eating ─
+        ['cunnilingus','cunnilingus'],['cunnlingus','cunnilingus'],
+        ['pussy eating','cunnilingus'],['eating her out','cunnilingus'],
+        ['eating pussy','cunnilingus'],['face riding','cunnilingus'],
+        ['grinding my pussy on your face','cunnilingus'],
+        // ─ Creampie ─
+        ['creampie','creampie'],['cream pie','creampie'],
+        ['creampie 1x','creampie'],['creampie x1','creampie'],
+        ['ballsdeep creampie','creampie'],['risky creampie','creampie'],
+        ['forced creampie','creampie'],['multiple creampies','creampie'],
+        ['cum inside','creampie'],['cum in me','creampie'],
+        ['fill me up','creampie'],['cumming inside','creampie'],
+        // ─ Breeding / impreg ─
+        ['breeding','breeding'],['breed me','breeding'],
+        ['impregnation','breeding'],['impreg','breeding'],
+        ['impreg risk','breeding'],['lmpreg','breeding'],
+        ['impreg','breeding'],['forced breeding','breeding'],
+        ['baby making','breeding'],['starting a family','breeding'],
+        ['thinking about baby names','breeding'],
+        ['make me a mommy','breeding'],['future baby mama','breeding'],
+        // ─ Kissing ─
+        ['kissing','kissing'],['making out','kissing'],
+        ['making out','kissing'],['lots of kissing','kissing'],
+        ['sloppy kisses','kissing'],['slow kisses','kissing'],
+        ['deep kissing','kissing'],['french kissing','kissing'],
+        ['neck kissing','kissing'],['aggressive kissing','kissing'],
+        ['lap kisses','kissing'],
+        // ─ Degradation ─
+        ['degradation','degradation'],['degradating','degradation'],
+        ['degrading','degradation'],['self degradation','degradation'],
+        ['self-degradation','degradation'],['light self degredation','degradation'],
+        ['verbal abuse','degradation'],['belittling','degradation'],
+        ['humiliation','degradation'],['mocking','degradation'],
+        ['insults','degradation'],['body shaming','degradation'],
+        // ─ Praise ─
+        ['praise','praise'],['praise kink','praise'],
+        ['praises','praise'],['good boy','praise'],
+        ['good boys','praise'],['lots of good boy','praise'],
+        ['lots of good boys','praise'],['good boy','praise'],
+        ['calling you cute','praise'],['calling you names','praise'],
+        // ─ GFE ─
+        ['gfe','gfe'],['girlfriend experience','gfe'],
+        ['wife experience','gfe'],['domestic','gfe'],
+        ['established relationship','gfe'],['cozy','gfe'],
+        // ─ Femdom / Fdom ─
+        ['fdom','fdom'],['femdom','fdom'],['female domination','fdom'],
+        ['dommy mommy','fdom'],['gentle femdom','fdom'],
+        ['gentle fdom','fdom'],['harsh fdom','fdom'],
+        ['mean fdom','fdom'],['soft fdom','fdom'],
+        ['loving fdom','fdom'],['strict femdom','fdom'],
+        ['gfd','fdom'],
+        // ─ Yandere / obsessive ─
+        ['yandere','yandere'],['obsessed','yandere'],
+        ['obsessed with you','yandere'],['stalker','yandere'],
+        ['tsundere into yandere','yandere'],
+        // ─ Riding / cowgirl ─
+        ['riding','riding'],['cowgirl','riding'],
+        ['cowgirl position','riding'],['girl on top','riding'],
+        ['woman on top','riding'],['reverse amazon position','riding'],
+        ['ride you','riding'],['riding your cock','riding'],
+        // ─ Doggystyle ─
+        ['doggystyle','doggystyle'],['doggy style','doggystyle'],
+        ['doggy','doggystyle'],['face down ass up','doggystyle'],
+        ['head down ass up','doggystyle'],['prone bone','doggystyle'],
+        ['pronebone','doggystyle'],
+        // ─ Spanking ─
+        ['spanking','spanking'],['spank','spanking'],
+        ['ass slapping','spanking'],['ass smacking','spanking'],
+        ['slap','spanking'],['slapping','spanking'],
+        ['face slaps','spanking'],['ass play','spanking'],
+        // ─ Bondage / restraint ─
+        ['bondage','bondage'],['tied up','bondage'],
+        ['chained up','bondage'],['chasity','bondage'],
+        ['pinned','bondage'],['pinned down','bondage'],
+        // ─ Size ─
+        ['big cock','size'],['big dick','size'],['big cock worship','size'],
+        ['size mention','size'],['size mentions','size'],
+        ['size difference','size'],['size play','size'],
+        ['size kink','size'],['size queen','size'],
+        ['raw cock','size'],['stretch out my pussy with your huge dick','size'],
+        // ─ Orgasm denial / edging ─
+        ['orgasm denial','denial'],['denial','denial'],
+        ['edging','denial'],['no stopping','denial'],
+        ['denial slut','denial'],
+        // ─ Overstimulation ─
+        ['overstimulation','overstim'],['overstim','overstim'],
+        ['overstimulated','overstim'],['uncontrollable orgasm','overstim'],
+        ['multiple orgasms','overstim'],['endless multiple orgasms','overstim'],
+        // ─ Mommy dom ─
+        ['mommy','mommydom'],['mommydom','mommydom'],
+        ['mommy dom','mommydom'],['mommy domme','mommydom'],
+        ['dommy mommy','mommydom'],['mdlb','mommydom'],
+        ['ddlg','mommydom'],['dd/lg','mommydom'],
+        // ─ ASMR / soft ─
+        ['asmr','asmr'],['soft spoken','asmr'],
+        ['whispering','asmr'],['ear nibbling','asmr'],
+        ['sleep aid','asmr'],['relaxing','asmr'],
+        ['soothing','asmr'],['sleep relief','asmr'],
+        // ─ Tsundere / brat ─
+        ['tsundere','tsundere'],['brat','tsundere'],
+        ['brat taming','tsundere'],['bratty','tsundere'],
+        ['bratty fsub','tsundere'],['dorky and bratty','tsundere'],
+        ['tombrat','tsundere'],
+        // ─ CNC / noncon ─
+        ['cnc','cnc'],['noncon','cnc'],['dub con','cnc'],
+        ['dubcon','cnc'],['rape','cnc'],['noncon','cnc'],
+    ];
+    pairs.forEach(([variant, canonical]) => {
+        m[normKey(variant)] = canonical;
+    });
+    return m;
+})();
+
+/**
+ * SEMANTIC CLUSTERS: related concepts that should surface together.
+ * Each key is a canonical tag; its array lists related canonicals.
+ */
+const CLUSTERS = {
+    // ─ Oral sex (giving BJ) ─
+    blowjob:    ['deepthroat','facefuck','throatpie','oral fixation','cock worship','slurping','sucking while yapping','softsuck','doesnt stop sucking','gluck'],
+    deepthroat: ['blowjob','facefuck','throatpie','cock worship','oral','slurping'],
+    facefuck:   ['blowjob','deepthroat','throatpie','face riding','rough'],
+    throatpie:  ['blowjob','deepthroat','facefuck','cum swallowing','cum in mouth'],
+
+    // ─ Oral (receiving) ─
+    cunnilingus:['pussy worship','face riding','breast sucking','fingering','teasing'],
+    'pussy worship':['cunnilingus','face riding','breast sucking','licking'],
+
+    // ─ Breeding / impreg ─
+    breeding:   ['creampie','impregnation','cum inside','ovulation','fill me up','baby making','starting a family'],
+    creampie:   ['breeding','cum inside','fill me up','multiple creampies','risky creampie'],
+
+    // ─ Riding ─
+    riding:     ['doggystyle','mating press','cowgirl','woman on top','grinding','seated sex'],
+    doggystyle: ['riding','prone bone','face down ass up','rough','mating press'],
+
+    // ─ Degradation ─
+    degradation:['humiliation','verbal abuse','belittling','mocking','insults','body shaming','sph','self degradation'],
+    humiliation:['degradation','sph','mocking','verbal abuse','small penis humiliation'],
+
+    // ─ Praise ─
+    praise:     ['good boy','encouragement','affectionate','loving','soft','gentle femdom'],
+    'good boy': ['praise','encouragement','affectionate','nurturing','mommy dom'],
+
+    // ─ Femdom ─
+    fdom:       ['gentle femdom','harsh fdom','mean fdom','dommy mommy','mommydom','soft fdom','brat taming'],
+    mommydom:   ['fdom','ddlg','mdlb','nursing handjob','lactation','breast feeding','praise'],
+
+    // ─ Yandere / obsessive ─
+    yandere:    ['stalker','obsessed','possessive','tsundere','dark romance','unhinged','kidnapping'],
+    stalker:    ['yandere','obsessed','possessive','kidnapping','blackmail'],
+
+    // ─ Brat / tsundere ─
+    tsundere:   ['brat taming','bratty','enemies to lovers','rivals','arguing','hate fucking'],
+    'brat taming':['tsundere','bratty','rough','degradation','punishment'],
+
+    // ─ Bondage / restraint ─
+    bondage:    ['tied up','chained up','pinned down','restraint','punishment','knifeplay','control'],
+
+    // ─ Spanking ─
+    spanking:   ['ass slapping','slapping','rough','degradation','punishment','brat taming'],
+
+    // ─ Size ─
+    size:       ['big cock','doggystyle','mating press','rough','pussy stretching','size difference'],
+    'big cock': ['size','mating press','rough','doggystyle','pussy stretching'],
+
+    // ─ Orgasm denial ─
+    denial:     ['edging','teasing','overstim','countdown','no stopping','orgasm control'],
+    overstim:   ['denial','teasing','multiple orgasms','countdown','forced orgasm'],
+
+    // ─ GFE / comfort ─
+    gfe:        ['established relationship','domestic','cuddling','aftercare','wholesome','soft','asmr'],
+    asmr:       ['soft spoken','whispering','gfe','sleep aid','relaxing','ear nibbling','gentle'],
+
+    // ─ Kissing / intimacy ─
+    kissing:    ['making out','neck kissing','french kissing','sloppy kisses','slow burn','intimate','gfe'],
+    'making out':['kissing','grinding','teasing','slow burn','intimate'],
+
+    // ─ Creampie / cum ─
+    'cum swallowing':['throatpie','blowjob','deepthroat','cum fetish','gulping'],
+    'cum fetish': ['cum swallowing','throatpie','breeding','creampie','gulping'],
+
+    // ─ Rough sex ─
+    rough:      ['doggystyle','bondage','spanking','degradation','brat taming','face fuck','pinned down','hate fucking'],
+    'hate fucking':['enemies to lovers','tsundere','rough','degradation','arguing'],
+    'enemies to lovers':['hate fucking','tsundere','rivals','slow burn','arguing','brat taming'],
+
+    // ─ Fingering ─
+    fingering:  ['cunnilingus','pussy eating','teasing','orgasm denial','edging','masturbation'],
+
+    // ─ Lactation ─
+    lactation:  ['breast feeding','breast sucking','nursing handjob','mommydom','breast play'],
+    'breast sucking':['lactation','breast feeding','nipple play','nursing','mommydom'],
+
+    // ─ Japanese / bilingual ─
+    japanese:   ['bilingual','japanese','bilingual/japanese','japanese/bilingual','dual-lingual','full japanese audio'],
+
+    // ─ Friends to lovers / romance ─
+    'friends to lovers':['slow burn','confession','childhood friends to lovers','established relationship','roommates to lovers'],
+    'slow burn': ['friends to lovers','confession','enemies to lovers','romantic','longing'],
+
+    // ─ SFW / emotional ─
+    sfw:        ['comfort','heartfelt','romantic','wholesome','emotional','soft','platonic','support'],
+    comfort:    ['sfw','aftercare','reassurance','support','heartfelt','wholesome'],
+    aftercare:  ['comfort','gfe','cuddling','reassurance','wholesome'],
+};
+
+/**
+ * Resolve a query string to its canonical form via SYNONYMS.
+ */
+function resolveQuery(q) {
+    const key = normKey(q);
+    return SYNONYMS[key] || key;
+}
+
+/**
+ * Get all related normalized keys for a query (its cluster peers).
+ * Cluster values are normalized so comparison is apples-to-apples.
+ */
+function getRelatedCanonicals(canonical) {
+    const raw = CLUSTERS[canonical] || [];
+    return new Set(raw.map(normKey));
+}
+
+/**
+ * Check if a single tag matches a canonical query (exact or synonym).
+ */
+function tagMatchesPrimary(tag, canonical) {
+    const k = normKey(tag);
+    const resolved = SYNONYMS[k] || k;
+    return resolved === canonical || k === canonical;
+}
+
+/**
+ * Check if a tag matches any of the related canonicals.
+ * Both tag and set values are normalized keys.
+ */
+function tagMatchesRelated(tag, relatedSet) {
+    if (!relatedSet.size) return false;
+    const k = normKey(tag);
+    const resolved = SYNONYMS[k] || k;
+    return relatedSet.has(resolved) || relatedSet.has(k);
+}
+
 /* ── FILTER ──────────────────────────────── */
+// Returns { primary: [...], related: [...] }
+function doSmartSearch(list, rawQuery) {
+    const canonical = resolveQuery(rawQuery);
+    const related   = getRelatedCanonicals(canonical);
+
+    const primary = [];
+    const secondary = [];
+
+    for (const a of list) {
+        const tags  = a.tags  || [];
+        const title = (a.title    || '').toLowerCase();
+        const syn   = (a.synopsis || '').toLowerCase();
+        const q     = rawQuery.toLowerCase().trim();
+
+        // ── Primary: exact title/synopsis match OR normalized tag match ──
+        const titleMatch   = title.includes(q);
+        const synMatch     = syn.includes(q);
+        const tagPrimary   = tags.some(t => tagMatchesPrimary(t, canonical));
+
+        if (titleMatch || synMatch || tagPrimary) {
+            primary.push(a);
+            continue;
+        }
+
+        // ── Related: same cluster ──
+        if (related.size && tags.some(t => tagMatchesRelated(t, related))) {
+            secondary.push(a);
+        }
+    }
+
+    return { primary, secondary };
+}
+
 function doFilter() {
     let list = [...state.audios];
     if (state.currentType !== 'all')
         list = list.filter(a => resolveType(a) === state.currentType);
     if (state.showFavOnly)
         list = list.filter(a => isFav(a.id));
-    if (state.searchQuery.trim()) {
-        const q = state.searchQuery.toLowerCase().trim();
-        list = list.filter(a =>
-            (a.title    || '').toLowerCase().includes(q) ||
-            (a.synopsis || '').toLowerCase().includes(q) ||
-            (a.tags     || []).some(t => t.toLowerCase().includes(q)) ||
-            (a.writer?.name || '').toLowerCase().includes(q)
-        );
-    }
     return doSort(list);
 }
 
@@ -854,10 +1245,10 @@ function buildTypeBadge(audio) {
 }
 
 /* ── CREATE CARD ─────────────────────────── */
-function createCard(audio, i) {
+function createCard(audio, i, isRelated=false) {
     const fav = isFav(audio.id);
     return `
-    <article class="audio-card" style="animation-delay:${i*0.04}s">
+    <article class="audio-card${isRelated?' card-related':''}" style="animation-delay:${i*0.04}s">
         <div class="card-header">
             ${buildTypeBadge(audio)}
             <button class="card-favorite-btn${fav?' favorited':''}"
@@ -883,19 +1274,58 @@ function createCard(audio, i) {
 
 /* ── RENDER ──────────────────────────────── */
 function renderAudios() {
-    const filtered = doFilter();
-    if (!filtered.length) {
+    const base = doFilter();
+
+    if (!state.searchQuery.trim()) {
+        // No search — just show all filtered
+        if (!base.length) {
+            dom.grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🌸</div>
+                    <h3 class="empty-title">No Audios Found</h3>
+                    <p>Try adjusting your filters.</p>
+                </div>`;
+        } else {
+            dom.grid.innerHTML = base.map((a,i) => createCard(a,i)).join('');
+        }
+        const n = base.length;
+        dom.resCnt.textContent = `Showing ${n} ${n===1?'audio':'audios'}`;
+        return;
+    }
+
+    // Smart search active
+    const { primary, secondary } = doSmartSearch(base, state.searchQuery.trim());
+
+    if (!primary.length && !secondary.length) {
         dom.grid.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">🌸</div>
                 <h3 class="empty-title">No Audios Found</h3>
-                <p>Try adjusting your search or selecting a different type.</p>
+                <p>Try a different tag or keyword.</p>
             </div>`;
-    } else {
-        dom.grid.innerHTML = filtered.map((a,i) => createCard(a,i)).join('');
+        dom.resCnt.textContent = `0 audios`;
+        return;
     }
-    const n = filtered.length;
-    dom.resCnt.textContent = `Showing ${n} ${n===1?'audio':'audios'}`;
+
+    // Build the canonical label for the divider
+    const canonical = resolveQuery(state.searchQuery.trim());
+    const relatedLabel = CLUSTERS[canonical]
+        ? CLUSTERS[canonical].slice(0,3).join(', ')
+        : 'related tags';
+
+    let html = primary.map((a,i) => createCard(a,i)).join('');
+
+    if (secondary.length) {
+        html += `
+        <div class="related-divider">
+            <span class="related-divider-label">✦ Also related to "${relatedLabel}" ✦</span>
+        </div>`;
+        html += secondary.map((a,i) => createCard(a, primary.length + i, true)).join('');
+    }
+
+    dom.grid.innerHTML = html;
+    const total = primary.length + secondary.length;
+    dom.resCnt.textContent = `${primary.length} direct · ${secondary.length} related`;
 }
 
 /* ── TYPE SWITCH ─────────────────────────── */
