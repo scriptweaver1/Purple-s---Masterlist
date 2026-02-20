@@ -14,6 +14,106 @@
     <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
 
     <style>
+
+/* ═══════════════════════════════════════════
+   SAKURA ATMOSPHERIC SCENE
+═══════════════════════════════════════════ */
+
+.sakura-scene {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* 🌙 Moonlight */
+.moon-glow {
+    position: absolute;
+    bottom: 380px;
+    left: 12%;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 220, 255, 0.25) 0%,
+        rgba(255, 200, 255, 0.18) 35%,
+        rgba(200, 160, 255, 0.10) 55%,
+        transparent 75%
+    );
+    filter: blur(30px);
+    animation: moonPulse 8s ease-in-out infinite;
+}
+
+@keyframes moonPulse {
+    0%,100% { transform: scale(1); opacity: 0.8; }
+    50%     { transform: scale(1.05); opacity: 1; }
+}
+
+/* 🌸 Tree */
+.sakura-tree {
+    position: absolute;
+    bottom: 0;
+    left: 5%;
+    width: 420px;
+    opacity: 0.9;
+    transform-origin: bottom center;
+    animation: treeSway 10s ease-in-out infinite;
+    filter: drop-shadow(0 0 40px rgba(255,182,193,0.25));
+}
+
+@keyframes treeSway {
+    0%,100% { transform: rotate(0deg); }
+    50%     { transform: rotate(1.5deg); }
+}
+
+/* 🌫 Blossom Mist */
+.blossom-mist {
+    position: absolute;
+    bottom: 350px;
+    left: 5%;
+    width: 420px;
+    height: 300px;
+    pointer-events: none;
+}
+
+.mist-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #ffd6e8 0%, #ffb6c1 60%, transparent 100%);
+    border-radius: 50%;
+    opacity: 0;
+    animation: mistFloat linear infinite;
+}
+
+@keyframes mistFloat {
+    0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+    20%  { opacity: 0.6; }
+    80%  { opacity: 0.3; }
+    100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+}
+
+/* 🌸 Sakura Petals */
+.petal {
+    position: absolute;
+    top: -30px;
+    opacity: 0;
+    animation: petalFall linear infinite;
+    border-radius: 50% 0 50% 0;
+
+    background: radial-gradient(
+        circle at 30% 30%,
+        #fff0f5 0%,
+        #ffc1cc 40%,
+        #ffb6c1 70%,
+        #f8a5c2 100%
+    );
+
+    box-shadow:
+        0 0 6px rgba(255,182,193,0.6),
+        inset -2px -2px 4px rgba(255,255,255,0.4);
+}
     /* ═══════════════════════════════════════════
        CSS VARIABLES
     ═══════════════════════════════════════════ */
@@ -502,7 +602,37 @@
 <div class="geo-bg"></div>
 <canvas class="geo-canvas" id="geoCanvas"></canvas>
 <div class="sakura-container" id="sakuraContainer"></div>
+<div class="sakura-container" id="sakuraContainer"></div>
 
+<!-- Sakura Tree + Atmosphere -->
+<div class="sakura-scene">
+    <div class="moon-glow"></div>
+
+    <div class="sakura-tree">
+        <svg viewBox="0 0 600 800" preserveAspectRatio="xMidYMax meet">
+            <!-- Trunk -->
+            <path d="M300 800 
+                     C260 650, 280 520, 300 450
+                     C320 520, 340 650, 300 800"
+                  fill="#2d1b52"/>
+
+            <!-- Branches -->
+            <path d="M300 450 C180 380,120 300,150 250"
+                  stroke="#2d1b52" stroke-width="18" fill="none"/>
+            <path d="M300 470 C420 380,480 300,450 250"
+                  stroke="#2d1b52" stroke-width="18" fill="none"/>
+
+            <!-- Blossom canopy -->
+            <circle cx="300" cy="250" r="170" fill="rgba(255,182,193,0.18)"/>
+            <circle cx="230" cy="280" r="130" fill="rgba(255,192,203,0.22)"/>
+            <circle cx="370" cy="280" r="130" fill="rgba(255,182,193,0.22)"/>
+            <circle cx="300" cy="180" r="120" fill="rgba(255,192,203,0.25)"/>
+        </svg>
+    </div>
+
+    <div class="blossom-mist" id="blossomMist"></div>
+</div>
+    
 <!-- ── AGE GATE ────────────────────────────── -->
 <div class="age-overlay" id="ageOverlay">
     <div class="age-modal">
@@ -1468,6 +1598,41 @@ function init() {
 document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', init)
     : init();
+
+/* ═══════════════════════════════════════════
+   SAKURA ATMOSPHERE SYSTEM
+═══════════════════════════════════════════ */
+
+function createMistParticles() {
+    const mist = document.getElementById('blossomMist');
+    const count = 40;
+
+    for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.classList.add('mist-particle');
+
+        p.style.left = Math.random() * 400 + 'px';
+        p.style.bottom = Math.random() * 120 + 'px';
+        p.style.animationDuration = (Math.random() * 6 + 6) + 's';
+        p.style.animationDelay = Math.random() * 5 + 's';
+
+        mist.appendChild(p);
+    }
+}
+
+function enhancePetals() {
+    const petals = document.querySelectorAll('.petal');
+    petals.forEach(p => {
+        p.style.width = `${Math.random() * 12 + 8}px`;
+        p.style.height = `${Math.random() * 8 + 6}px`;
+        p.style.opacity = Math.random() * 0.6 + 0.4;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    createMistParticles();
+    enhancePetals();
+});
 </script>
 </body>
 </html>
