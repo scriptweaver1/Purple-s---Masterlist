@@ -167,12 +167,29 @@
     .header-right { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
     .header-socials { display:flex; gap:0.45rem; }
     .social-icon {
-        width:36px; height:36px; border-radius:50%;
+        width:38px; height:38px; border-radius:50%;
         background:rgba(74,31,168,0.3); border:1px solid rgba(139,92,246,0.3);
         display:flex; align-items:center; justify-content:center;
-        text-decoration:none; color:var(--lavender); font-size:1rem; transition:all 0.3s;
+        text-decoration:none; color:var(--lavender); transition:all 0.3s;
+        overflow:hidden;
     }
-    .social-icon:hover { background:linear-gradient(135deg,var(--deep-violet),var(--royal-purple)); border-color:var(--amethyst); color:var(--snow); transform:translateY(-3px); box-shadow:0 6px 20px var(--glow-deep); }
+    .social-icon svg { width:20px; height:20px; flex-shrink:0; transition:transform 0.3s; }
+    .social-icon:hover { transform:translateY(-3px); }
+    .social-icon:hover svg { transform:scale(1.1); }
+
+    /* Brand-specific colours */
+    .social-reddit:hover  { background:#FF4500; border-color:#FF4500; box-shadow:0 6px 20px rgba(255,69,0,0.45); }
+    .social-twitter:hover { background:#000;    border-color:#555;    color:#fff; box-shadow:0 6px 20px rgba(0,0,0,0.5); }
+    .social-discord:hover { background:#5865F2; border-color:#5865F2; color:#fff; box-shadow:0 6px 20px rgba(88,101,242,0.5); }
+    .social-kofi:hover    { background:#FF5E5B; border-color:#FF5E5B; color:#fff; box-shadow:0 6px 20px rgba(255,94,91,0.45); }
+    .social-bluesky:hover { background:#0085FF; border-color:#0085FF; color:#fff; box-shadow:0 6px 20px rgba(0,133,255,0.45); }
+    .social-throne:hover  { background:#a855f7; border-color:#a855f7; color:#fff; box-shadow:0 6px 20px rgba(168,85,247,0.5); }
+
+    /* Reddit SVG class-based colouring */
+    .social-reddit .reddit-bg { fill:rgba(139,92,246,0); transition:fill 0.3s; }
+    .social-reddit .reddit-fg { fill:var(--lavender); transition:fill 0.3s; }
+    .social-reddit:hover .reddit-bg { fill:#FF4500; }
+    .social-reddit:hover .reddit-fg { fill:#ffffff; }
     .accessibility-btn {
         width:36px; height:36px; border-radius:50%;
         background:rgba(74,31,168,0.3); border:1px solid rgba(139,92,246,0.3);
@@ -380,14 +397,25 @@
     @media (max-width:900px) {
         .main-container { flex-direction:column; padding:1.2rem; }
         .sidebar { width:100%; position:static; }
-        .nav-list { flex-direction:row; flex-wrap:wrap; }
-        .nav-item { flex-basis:auto; }
+        .nav-list {
+            flex-direction:row; flex-wrap:wrap;
+            justify-content:center; gap:0.5rem;
+        }
+        .nav-item { flex-basis:auto; justify-content:center; }
+        .nav-item .nav-count { display:none; }
     }
     @media (max-width:600px) {
         header { padding:1rem 1.2rem; }
+        .header-content { justify-content:center; text-align:center; flex-direction:column; align-items:center; }
+        .logo { justify-content:center; }
+        .search-container { max-width:100%; }
+        .header-right { width:100%; justify-content:center; }
+        .header-socials { justify-content:center; width:100%; }
         .logo-title { font-size:1.1rem; }
         .audios-grid.view-2,.audios-grid.view-3 { grid-template-columns:1fr; }
         .a11y-panel { width:100%; }
+        .section-header { flex-direction:column; align-items:flex-start; }
+        .section-controls { flex-wrap:wrap; }
     }
     </style>
 </head>
@@ -462,10 +490,43 @@
 
         <div class="header-right">
             <div class="header-socials">
-                <a class="social-icon" href="#" title="Reddit">🟠</a>
-                <a class="social-icon" href="#" title="Twitter / X">🐦</a>
-                <a class="social-icon" href="#" title="Discord">💬</a>
-                <a class="social-icon" href="#" title="Ko-fi">☕</a>
+                <!-- Reddit -->
+                <a class="social-icon social-reddit" href="https://www.reddit.com/user/Purple-Juice-4073/" target="_blank" rel="noopener noreferrer" title="Reddit">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <circle class="reddit-bg" cx="10" cy="10" r="10"/>
+                        <path class="reddit-fg" d="M16.67 10a1.46 1.46 0 00-2.47-1 7.12 7.12 0 00-3.85-1.23l.65-3.08 2.13.45a1 1 0 101.07-1 1 1 0 00-.96.68l-2.38-.5a.16.16 0 00-.19.12l-.73 3.44a7.14 7.14 0 00-3.89 1.23 1.46 1.46 0 10-1.61 2.39 2.87 2.87 0 000 .44c0 2.24 2.61 4.06 5.83 4.06s5.83-1.82 5.83-4.06a2.87 2.87 0 000-.44 1.46 1.46 0 00.47-1.5zM7.27 11a1 1 0 111 1 1 1 0 01-1-1zm5.58 2.71a3.58 3.58 0 01-2.85.57 3.58 3.58 0 01-2.85-.57.19.19 0 01.27-.27 3.2 3.2 0 002.58.44 3.2 3.2 0 002.58-.44.19.19 0 01.27.27zm-.14-1.71a1 1 0 111-1 1 1 0 01-1 1z"/>
+                    </svg>
+                </a>
+                <!-- Bluesky -->
+                <a class="social-icon social-bluesky" href="https://bsky.app/profile/purple-juice-4073.bsky.social" target="_blank" rel="noopener noreferrer" title="Bluesky">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 530" fill="currentColor">
+                        <path d="M300 241.5C263.6 165.3 176.4 51.4 99.1 15.8 66.5.2 24.4-7.8 9.6 24.5c-9.3 20.5-7 61.7 2.9 86.3 23.1 59.6 85.1 74.5 145.1 66.9-106.4 18.1-133.9 80.2-75.3 142.2 55.4 58.6 119.8 29.5 148.5-14.5 11.3-17.3 18.7-35.5 23-52.3 4.3 16.8 11.7 35 23 52.3 28.7 44 93.1 73.1 148.5 14.5 58.6-62 31.1-124.1-75.3-142.2 60 7.6 122 -7.3 145.1-66.9 9.9-24.6 12.2-65.8 2.9-86.3C482.6-7.8 440.5.2 407.9 15.8c-77.3 35.6-164.5 149.5-200.9 225.7 0 0-3.7 0-7 0z"/>
+                    </svg>
+                </a>
+                <!-- Twitter / X -->
+                <a class="social-icon social-twitter" href="https://x.com/purplejuice4073?s=21" target="_blank" rel="noopener noreferrer" title="Twitter / X">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
+                <!-- Discord -->
+                <a class="social-icon social-discord" href="https://discord.com/invite/Q85FgE8b66" target="_blank" rel="noopener noreferrer" title="Discord">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                </a>
+                <!-- Throne -->
+                <a class="social-icon social-throne" href="https://throne.com/purple-juice-4073" target="_blank" rel="noopener noreferrer" title="Throne Wishlist">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 7l2 13h16L22 7zm0 3.5l6 3-1.5 9.5H7.5L6 13.5zM9 11v4h2v-3h2v3h2v-4H9z"/>
+                    </svg>
+                </a>
+                <!-- Ko-fi -->
+                <a class="social-icon social-kofi" href="https://ko-fi.com/purplejuice4073" target="_blank" rel="noopener noreferrer" title="Ko-fi">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"/>
+                    </svg>
+                </a>
             </div>
             <button class="accessibility-btn" id="a11yBtn" title="Accessibility settings">Aa</button>
         </div>
