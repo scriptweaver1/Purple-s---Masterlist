@@ -14,106 +14,6 @@
     <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
 
     <style>
-
-/* ═══════════════════════════════════════════
-   SAKURA ATMOSPHERIC SCENE
-═══════════════════════════════════════════ */
-
-.sakura-scene {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-}
-
-/* 🌙 Moonlight */
-.moon-glow {
-    position: absolute;
-    bottom: 380px;
-    left: 12%;
-    width: 420px;
-    height: 420px;
-    border-radius: 50%;
-    background: radial-gradient(
-        circle,
-        rgba(255, 220, 255, 0.25) 0%,
-        rgba(255, 200, 255, 0.18) 35%,
-        rgba(200, 160, 255, 0.10) 55%,
-        transparent 75%
-    );
-    filter: blur(30px);
-    animation: moonPulse 8s ease-in-out infinite;
-}
-
-@keyframes moonPulse {
-    0%,100% { transform: scale(1); opacity: 0.8; }
-    50%     { transform: scale(1.05); opacity: 1; }
-}
-
-/* 🌸 Tree */
-.sakura-tree {
-    position: absolute;
-    bottom: 0;
-    left: 5%;
-    width: 420px;
-    opacity: 0.9;
-    transform-origin: bottom center;
-    animation: treeSway 10s ease-in-out infinite;
-    filter: drop-shadow(0 0 40px rgba(255,182,193,0.25));
-}
-
-@keyframes treeSway {
-    0%,100% { transform: rotate(0deg); }
-    50%     { transform: rotate(1.5deg); }
-}
-
-/* 🌫 Blossom Mist */
-.blossom-mist {
-    position: absolute;
-    bottom: 350px;
-    left: 5%;
-    width: 420px;
-    height: 300px;
-    pointer-events: none;
-}
-
-.mist-particle {
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    background: radial-gradient(circle, #ffd6e8 0%, #ffb6c1 60%, transparent 100%);
-    border-radius: 50%;
-    opacity: 0;
-    animation: mistFloat linear infinite;
-}
-
-@keyframes mistFloat {
-    0%   { transform: translateY(0) scale(0.8); opacity: 0; }
-    20%  { opacity: 0.6; }
-    80%  { opacity: 0.3; }
-    100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
-}
-
-/* 🌸 Sakura Petals */
-.petal {
-    position: absolute;
-    top: -30px;
-    opacity: 0;
-    animation: petalFall linear infinite;
-    border-radius: 50% 0 50% 0;
-
-    background: radial-gradient(
-        circle at 30% 30%,
-        #fff0f5 0%,
-        #ffc1cc 40%,
-        #ffb6c1 70%,
-        #f8a5c2 100%
-    );
-
-    box-shadow:
-        0 0 6px rgba(255,182,193,0.6),
-        inset -2px -2px 4px rgba(255,255,255,0.4);
-}
     /* ═══════════════════════════════════════════
        CSS VARIABLES
     ═══════════════════════════════════════════ */
@@ -168,7 +68,7 @@
         position: fixed; inset: 0; z-index: -3;
         background: linear-gradient(160deg, var(--abyss) 0%, var(--void) 40%, var(--ink) 100%);
     }
-    .geo-canvas { position: fixed; inset: 0; z-index: -2; opacity: 0.55; pointer-events: none; }
+    .geo-canvas { position: fixed; inset: 0; z-index: -2; opacity: 0.72; pointer-events: none; }
     .sakura-container { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
     .petal {
         position: absolute; top: -30px; opacity: 0;
@@ -176,10 +76,11 @@
         border-radius: 50% 0 50% 0;
     }
     @keyframes petalFall {
-        0%   { opacity:0; transform:translateY(0) rotate(0deg) scale(0.8); }
-        8%   { opacity:0.6; }
-        92%  { opacity:0.35; }
-        100% { opacity:0; transform:translateY(108vh) rotate(720deg) scale(1.1) translateX(60px); }
+        0%   { opacity:0;    transform: translateY(0)      translateX(0)              rotate(0deg)   scale(0.85); }
+        6%   { opacity:0.85; }
+        50%  { transform: translateY(52vh)   translateX(calc(var(--drift, 40px) * 0.5))  rotate(240deg) scale(1);    }
+        93%  { opacity:0.4; }
+        100% { opacity:0;    transform: translateY(112vh)  translateX(var(--drift, 40px)) rotate(760deg) scale(0.9); }
     }
 
     /* ═══════════════════════════════════════════
@@ -233,7 +134,7 @@
         border-bottom: 1px solid rgba(139,92,246,0.2);
         backdrop-filter: blur(16px);
         background: rgba(10,7,18,0.82);
-        position: sticky; top: 0; z-index: 200;
+        position: static;
     }
     .header-content {
         max-width: 1800px; margin: 0 auto;
@@ -364,7 +265,7 @@
     /* ═══════════════════════════════════════════
        SIDEBAR
     ═══════════════════════════════════════════ */
-    .sidebar { width:270px; flex-shrink:0; position:sticky; top:6rem; height:fit-content; }
+    .sidebar { width:270px; flex-shrink:0; position:sticky; top:1.5rem; height:fit-content; }
     .nav-panel {
         background:linear-gradient(180deg,rgba(45,27,82,0.55) 0%,rgba(18,13,31,0.88) 100%);
         border:1px solid rgba(139,92,246,0.22); border-radius:20px; padding:1.5rem; backdrop-filter:blur(12px);
@@ -439,6 +340,7 @@
         border:1px solid rgba(139,92,246,0.18); border-radius:18px; overflow:hidden;
         transition:all 0.32s ease; position:relative; box-shadow:0 6px 25px rgba(0,0,0,0.35);
         animation:cardIn 0.4s ease both;
+        display:flex; flex-direction:column;
     }
     @keyframes cardIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
     .audio-card:hover { transform:translateY(-5px); border-color:rgba(167,139,250,0.4); box-shadow:0 18px 55px rgba(74,31,168,0.3),0 0 0 1px rgba(196,181,253,0.07); }
@@ -456,7 +358,8 @@
     .type-sfw       { background:rgba(20,60,30,0.35);    border:1px solid rgba(74,222,128,0.35);  color:#86efac; }
     .type-ramblefap { background:rgba(90,28,80,0.3);     border:1px solid rgba(236,72,153,0.35);  color:#f9a8d4; }
     .type-karaoke   { background:rgba(28,38,90,0.3);     border:1px solid rgba(96,165,250,0.35);  color:#93c5fd; }
-    .type-unknown   { background:rgba(40,40,40,0.4);     border:1px solid rgba(150,150,150,0.3);  color:#9ca3af; }
+    .type-romantic  { background:rgba(120,20,60,0.3);    border:1px solid rgba(251,113,133,0.45); color:#fda4af; }
+    .type-collab    { background:rgba(15,55,75,0.35);    border:1px solid rgba(34,211,238,0.38);  color:#67e8f9; }
 
     /* Favourite button */
     .card-favorite-btn { width:32px; height:32px; border-radius:50%; background:rgba(45,27,82,0.6); border:1px solid rgba(139,92,246,0.3); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.25s; color:var(--lavender); flex-shrink:0; }
@@ -466,7 +369,7 @@
     .card-favorite-btn.favorited svg { fill:var(--wisteria); }
 
     /* Card body */
-    .card-content { padding:1rem 1.4rem 1.4rem; }
+    .card-content { padding:1rem 1.4rem 1.4rem; display:flex; flex-direction:column; flex:1; }
     .card-title { font-family:var(--font-display); font-size:0.98rem; font-weight:700; color:var(--petal-white); margin-bottom:0.8rem; line-height:1.45; }
 
     /* Tags */
@@ -478,7 +381,18 @@
     .tag-expand-btn:hover { background:rgba(139,92,246,0.2); color:var(--petal-white); }
 
     /* Synopsis */
-    .card-synopsis { font-size:0.84rem; line-height:1.75; color:var(--lavender); margin-bottom:0.9rem; }
+    .card-synopsis { font-size:0.84rem; line-height:1.75; color:var(--lavender); margin-bottom:0; }
+    .card-synopsis.clamped {
+        display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:4;
+        overflow:hidden;
+    }
+    .synopsis-toggle {
+        background:none; border:none; cursor:pointer; padding:0.22rem 0;
+        font-size:0.75rem; color:var(--amethyst); font-family:var(--font-body);
+        letter-spacing:0.04em; transition:color 0.18s; display:block; margin-top:0.35rem;
+        margin-bottom:0.9rem;
+    }
+    .synopsis-toggle:hover { color:var(--wisteria); }
 
     /* Meta */
     .card-meta { display:flex; align-items:center; gap:1rem; margin-bottom:0.8rem; flex-wrap:wrap; }
@@ -492,7 +406,7 @@
     .credit-item a:hover { color:var(--petal-white); border-color:var(--lavender); }
 
     /* Divider */
-    .card-divider { border:none; border-top:1px solid rgba(139,92,246,0.1); margin:0.85rem 0; }
+    .card-divider { border:none; border-top:1px solid rgba(139,92,246,0.1); margin:0.85rem 0; margin-top:auto; }
 
     /* Buttons */
     .card-buttons { display:flex; gap:0.55rem; flex-wrap:wrap; }
@@ -602,37 +516,7 @@
 <div class="geo-bg"></div>
 <canvas class="geo-canvas" id="geoCanvas"></canvas>
 <div class="sakura-container" id="sakuraContainer"></div>
-<div class="sakura-container" id="sakuraContainer"></div>
 
-<!-- Sakura Tree + Atmosphere -->
-<div class="sakura-scene">
-    <div class="moon-glow"></div>
-
-    <div class="sakura-tree">
-        <svg viewBox="0 0 600 800" preserveAspectRatio="xMidYMax meet">
-            <!-- Trunk -->
-            <path d="M300 800 
-                     C260 650, 280 520, 300 450
-                     C320 520, 340 650, 300 800"
-                  fill="#2d1b52"/>
-
-            <!-- Branches -->
-            <path d="M300 450 C180 380,120 300,150 250"
-                  stroke="#2d1b52" stroke-width="18" fill="none"/>
-            <path d="M300 470 C420 380,480 300,450 250"
-                  stroke="#2d1b52" stroke-width="18" fill="none"/>
-
-            <!-- Blossom canopy -->
-            <circle cx="300" cy="250" r="170" fill="rgba(255,182,193,0.18)"/>
-            <circle cx="230" cy="280" r="130" fill="rgba(255,192,203,0.22)"/>
-            <circle cx="370" cy="280" r="130" fill="rgba(255,182,193,0.22)"/>
-            <circle cx="300" cy="180" r="120" fill="rgba(255,192,203,0.25)"/>
-        </svg>
-    </div>
-
-    <div class="blossom-mist" id="blossomMist"></div>
-</div>
-    
 <!-- ── AGE GATE ────────────────────────────── -->
 <div class="age-overlay" id="ageOverlay">
     <div class="age-modal">
@@ -782,9 +666,13 @@
                     <span class="nav-icon">🎧</span><span>Ramblefap</span>
                     <span class="nav-count" id="count-ramblefap">0</span>
                 </li>
-                <li class="nav-item" data-type="unknown">
-                    <span class="nav-icon">🔮</span><span>Uncategorised</span>
-                    <span class="nav-count" id="count-unknown">0</span>
+                <li class="nav-item" data-type="romantic">
+                    <span class="nav-icon">🌹</span><span>Romantic</span>
+                    <span class="nav-count" id="count-romantic">0</span>
+                </li>
+                <li class="nav-item" data-type="collab">
+                    <span class="nav-icon">🎙️</span><span>Collab</span>
+                    <span class="nav-count" id="count-collab">0</span>
                 </li>
             </ul>
         </nav>
@@ -863,11 +751,12 @@ const CONFIG = {
         sfw:        'SFW',
         karaoke:    'Karaoke',
         ramblefap:  'Ramblefap',
-        unknown:    'Uncategorised',
+        romantic:   'Romantic',
+        collab:     'Collab',
     },
     typeEmoji: {
         fsub:'💜', fdom:'👑', fswitch:'🔀', yandere:'🌙',
-        sfw:'🌸', ramblefap:'🎧', karaoke:'🎤', unknown:'🔮',
+        sfw:'🌸', ramblefap:'🎧', karaoke:'🎤', romantic:'🌹', collab:'🎙️',
     }
 };
 
@@ -906,7 +795,7 @@ function esc(s) {
 function debounce(fn, ms) {
     let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
 }
-function resolveType(audio) { return audio.type || 'unknown'; }
+function resolveType(audio) { return audio.type || 'romantic'; }
 
 /* ── FAVOURITES ──────────────────────────── */
 function isFav(id)   { return state.favorites.includes(id); }
@@ -1260,7 +1149,7 @@ function doFilter() {
 /* ── COUNTS ──────────────────────────────── */
 function updateCounts() {
     $('count-all').textContent = state.audios.length;
-    ['fsub','fdom','fswitch','yandere','sfw','karaoke','ramblefap','unknown'].forEach(t => {
+    ['fsub','fdom','fswitch','yandere','sfw','karaoke','ramblefap','romantic','collab'].forEach(t => {
         const el = $(`count-${t}`);
         if (el) el.textContent = state.audios.filter(a => resolveType(a) === t).length;
     });
@@ -1374,6 +1263,37 @@ function buildTypeBadge(audio) {
     return `<span class="type-badge type-${t}">${emoji} ${label}</span>`;
 }
 
+/* ── SYNOPSIS ────────────────────────────── */
+// Threshold: if synopsis is longer than ~220 chars it gets clamped
+const SYNOPSIS_CLAMP_THRESHOLD = 220;
+
+function buildSynopsis(text, id) {
+    const needsClamp = text.length > SYNOPSIS_CLAMP_THRESHOLD;
+    const clampClass = needsClamp ? ' clamped' : '';
+    const btn = needsClamp
+        ? `<button class="synopsis-toggle" onclick="event.stopPropagation();toggleSynopsis(this)" aria-expanded="false">
+               ▾ Read more
+           </button>`
+        : '';
+    return `<p class="card-synopsis${clampClass}" style="margin-bottom:${needsClamp?'0':'0.9rem'}">${esc(text)}</p>${btn}`;
+}
+
+function toggleSynopsis(btn) {
+    const p = btn.previousElementSibling;
+    const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+    if (isExpanded) {
+        p.classList.add('clamped');
+        btn.textContent = '▾ Read more';
+        btn.setAttribute('aria-expanded', 'false');
+        btn.style.marginBottom = '0.9rem';
+    } else {
+        p.classList.remove('clamped');
+        btn.textContent = '▴ Show less';
+        btn.setAttribute('aria-expanded', 'true');
+        btn.style.marginBottom = '0.9rem';
+    }
+}
+
 /* ── CREATE CARD ─────────────────────────── */
 function createCard(audio, i, isRelated=false) {
     const fav = isFav(audio.id);
@@ -1393,7 +1313,7 @@ function createCard(audio, i, isRelated=false) {
         <div class="card-content">
             <h3 class="card-title">${esc(audio.title)}</h3>
             <div class="card-tags">${buildTags(audio.tags||[])}</div>
-            ${audio.synopsis ? `<p class="card-synopsis">${esc(audio.synopsis)}</p>` : ''}
+            ${audio.synopsis ? buildSynopsis(audio.synopsis, audio.id) : ''}
             ${buildMeta(audio)}
             ${buildCredits(audio)}
             <hr class="card-divider">
@@ -1546,29 +1466,253 @@ function initA11y() {
 }
 
 /* ── GEO BACKGROUND ─────────────────────── */
+/* ── SAKURA TREE ─────────────────────────── */
 function drawGeo() {
     const c = $('geoCanvas'), ctx = c.getContext('2d');
     c.width = window.innerWidth; c.height = window.innerHeight;
-    const cols = ['rgba(74,31,168,0.08)','rgba(109,40,217,0.07)','rgba(139,92,246,0.05)','rgba(167,139,250,0.04)','rgba(45,27,82,0.1)','rgba(196,181,253,0.03)'];
-    for (let i=0;i<45;i++) {
-        const x=Math.random()*c.width, y=Math.random()*c.height, s=80+Math.random()*220;
-        ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+s,y+s*0.6); ctx.lineTo(x-s*0.4,y+s); ctx.closePath();
-        ctx.fillStyle = cols[Math.floor(Math.random()*cols.length)];
+    const W = c.width, H = c.height;
+
+    // ── Seeded RNG for a consistent tree shape every draw ──
+    let _s = 20250220;
+    function rng() {
+        _s ^= _s << 13; _s ^= _s >> 17; _s ^= _s << 5;
+        return ((_s >>> 0) / 0xffffffff);
+    }
+
+    // ── Draw a single stylised 5-petal flower ──
+    function flower(x, y, r, petalCol, centerCol) {
+        for (let p = 0; p < 5; p++) {
+            const a = (p / 5) * Math.PI * 2 - Math.PI / 2;
+            ctx.beginPath();
+            ctx.ellipse(
+                x + Math.cos(a) * r * 0.72,
+                y + Math.sin(a) * r * 0.72,
+                r * 0.55, r * 0.38,
+                a, 0, Math.PI * 2
+            );
+            ctx.fillStyle = petalCol;
+            ctx.fill();
+        }
+        ctx.beginPath();
+        ctx.arc(x, y, r * 0.28, 0, Math.PI * 2);
+        ctx.fillStyle = centerCol;
         ctx.fill();
     }
+
+    // ── Draw a blossom cloud at a branch tip ──
+    function blossomCloud(x, y, size) {
+        const n = Math.floor(4 + rng() * 5);
+        for (let i = 0; i < n; i++) {
+            const ox = (rng() - 0.5) * size * 2.2;
+            const oy = (rng() - 0.5) * size * 2.2;
+            const cr = size * (0.55 + rng() * 0.6);
+
+            // Soft glow blob
+            const grad = ctx.createRadialGradient(x+ox, y+oy, 0, x+ox, y+oy, cr * 1.6);
+            grad.addColorStop(0,   'rgba(255,210,240,0.17)');
+            grad.addColorStop(0.4, 'rgba(216,180,255,0.12)');
+            grad.addColorStop(0.7, 'rgba(196,181,253,0.07)');
+            grad.addColorStop(1,   'rgba(167,139,250,0)');
+            ctx.beginPath();
+            ctx.arc(x+ox, y+oy, cr * 1.6, 0, Math.PI * 2);
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Dense petal mass underneath
+            for (let b = 0; b < 4; b++) {
+                const bx = x+ox + (rng()-0.5)*cr*1.1;
+                const by = y+oy + (rng()-0.5)*cr*1.1;
+                ctx.beginPath();
+                ctx.arc(bx, by, cr*(0.35+rng()*0.4), 0, Math.PI*2);
+                const cols = [
+                    'rgba(255,215,240,0.19)',
+                    'rgba(235,195,255,0.17)',
+                    'rgba(210,180,255,0.15)',
+                    'rgba(255,230,250,0.14)',
+                ];
+                ctx.fillStyle = cols[Math.floor(rng()*cols.length)];
+                ctx.fill();
+            }
+
+            // A few individual flowers scattered in the cloud
+            const nf = Math.floor(2 + rng() * 4);
+            for (let f = 0; f < nf; f++) {
+                const fx = x+ox + (rng()-0.5)*cr*1.5;
+                const fy = y+oy + (rng()-0.5)*cr*1.5;
+                const fr = 4 + rng() * 5;
+                const rotated = rng() * Math.PI * 2;
+                ctx.save();
+                ctx.translate(fx, fy);
+                ctx.rotate(rotated);
+                flower(0, 0, fr, 'rgba(255,220,245,0.38)', 'rgba(255,245,200,0.45)');
+                ctx.restore();
+            }
+        }
+    }
+
+    // ── Recursive branch drawing ──
+    function branch(x, y, angle, len, width, depth, maxDepth) {
+        const curve = (rng() - 0.5) * 0.28;
+        const x2 = x + Math.cos(angle) * len;
+        const y2 = y + Math.sin(angle) * len;
+        const cpx = (x+x2)/2 + Math.cos(angle + Math.PI/2) * len * curve;
+        const cpy = (y+y2)/2 + Math.sin(angle + Math.PI/2) * len * curve;
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(cpx, cpy, x2, y2);
+        ctx.lineWidth  = Math.max(width, 0.8);
+        ctx.lineCap    = 'round';
+        ctx.lineJoin   = 'round';
+        ctx.strokeStyle = `rgba(18,7,16,${Math.max(0.52 - depth * 0.06, 0.1)})`;
+        ctx.stroke();
+
+        if (depth >= maxDepth) {
+            blossomCloud(x2, y2, 16 + rng() * 14);
+            return;
+        }
+
+        const numSplits = (rng() > 0.28) ? 3 : 2;
+        const spreadBase = 0.38 + rng() * 0.22;
+        for (let i = 0; i < numSplits; i++) {
+            const frac = i / (numSplits - 1);                       // 0 … 1
+            const spread = (frac - 0.5) * 2 * spreadBase;
+            const lenR = 0.58 + rng() * 0.22;
+            const wR   = 0.60 + rng() * 0.08;
+            branch(x2, y2, angle + spread + (rng()-0.5)*0.12,
+                   len*lenR, width*wR, depth+1, maxDepth);
+        }
+    }
+
+    // ── Compose the tree ──
+    // Root: bottom-left quadrant, leaning gently right — classic ukiyo-e placement
+    const rootX  = W * 0.14;
+    const rootY  = H + 15;
+    const treeH  = H * 0.60;
+    const trkTop = { x: rootX + W*0.035, y: rootY - treeH };
+
+    // Trunk — thick brushstroke feel with a highlight streak
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Outer body
+    ctx.beginPath();
+    ctx.moveTo(rootX - 26, rootY);
+    ctx.bezierCurveTo(
+        rootX - 20, rootY - treeH * 0.38,
+        trkTop.x + 14, rootY - treeH * 0.72,
+        trkTop.x, trkTop.y
+    );
+    ctx.lineWidth   = 52;
+    ctx.strokeStyle = 'rgba(14,5,12,0.62)';
+    ctx.stroke();
+
+    // Subtle inner highlight
+    ctx.beginPath();
+    ctx.moveTo(rootX - 6, rootY);
+    ctx.bezierCurveTo(
+        rootX - 2, rootY - treeH * 0.36,
+        trkTop.x + 24, rootY - treeH * 0.68,
+        trkTop.x + 8, trkTop.y
+    );
+    ctx.lineWidth   = 16;
+    ctx.strokeStyle = 'rgba(55,18,45,0.20)';
+    ctx.stroke();
+
+    // Exposed root flare (ground connection)
+    for (let r = 0; r < 3; r++) {
+        const ra = -Math.PI/2 + Math.PI/4 + r*0.28 + (rng()-0.5)*0.2;
+        ctx.beginPath();
+        ctx.moveTo(rootX - 10 + r*8, rootY);
+        ctx.quadraticCurveTo(
+            rootX - 10 + r*8 + Math.cos(ra)*40,
+            rootY + Math.sin(ra)*30,
+            rootX - 20 + r*18 + Math.cos(ra)*70,
+            rootY + 18
+        );
+        ctx.lineWidth   = 18 - r*4;
+        ctx.strokeStyle = 'rgba(12,5,10,0.38)';
+        ctx.stroke();
+    }
+
+    // ── Main branches from top of trunk ──
+    const bx = trkTop.x, by = trkTop.y;
+    const up = -Math.PI / 2;
+
+    branch(bx, by, up - 0.62, treeH*0.34, 19, 1, 5); // far left
+    branch(bx, by, up - 0.22, treeH*0.38, 17, 1, 5); // left-centre
+    branch(bx, by, up + 0.18, treeH*0.32, 16, 1, 5); // right-centre
+    branch(bx, by, up + 0.55, treeH*0.28, 14, 1, 4); // far right (shorter)
+
+    // A mid-trunk side branch (feels organic / asymmetric)
+    const midX = rootX - 8;
+    const midY = rootY - treeH * 0.50;
+    branch(midX, midY, up + 0.85, treeH*0.20, 11, 1, 4);
+
+    // ── Subtle ambient ground glow under tree ──
+    const grd = ctx.createRadialGradient(rootX, rootY, 0, rootX, rootY, W*0.22);
+    grd.addColorStop(0,   'rgba(109,40,217,0.07)');
+    grd.addColorStop(0.5, 'rgba(74,31,168,0.04)');
+    grd.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.ellipse(rootX, rootY, W*0.22, H*0.10, 0, 0, Math.PI*2);
+    ctx.fillStyle = grd;
+    ctx.fill();
 }
 window.addEventListener('resize', drawGeo);
 
 /* ── SAKURA ──────────────────────────────── */
 function spawnPetals() {
     const container = $('sakuraContainer');
-    const cols = ['rgba(196,181,253,0.5)','rgba(167,139,250,0.4)','rgba(221,214,254,0.45)','rgba(245,243,255,0.35)'];
-    for (let i=0;i<16;i++) {
-        const p = document.createElement('div');
-        p.className = 'petal';
-        const sz = 7+Math.random()*9;
-        p.style.cssText = `left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${9+Math.random()*13}s;animation-delay:${Math.random()*12}s;border-radius:${Math.random()>.5?'50% 0 50% 0':'0 50% 0 50%'};`;
-        container.appendChild(p);
+
+    // 5-petal SVG flower — colours cycle through pink↔purple palette
+    const petalPalettes = [
+        { fill:'rgba(255,200,230,0.55)', stroke:'rgba(230,160,210,0.4)'  },  // soft pink
+        { fill:'rgba(220,180,255,0.50)', stroke:'rgba(190,140,245,0.38)' },  // wisteria
+        { fill:'rgba(245,215,250,0.48)', stroke:'rgba(200,170,240,0.35)' },  // pale lilac
+        { fill:'rgba(255,225,245,0.45)', stroke:'rgba(210,155,220,0.35)' },  // blush
+        { fill:'rgba(196,181,253,0.52)', stroke:'rgba(167,139,250,0.4)'  },  // lavender
+    ];
+
+    function makePetalSVG(pal, sz) {
+        // Build a 5-petal path centred at 50,50 in a 100×100 viewBox
+        const r = 32, cr = 14;   // petal reach, petal width (ellipse b-radius)
+        let petals = '';
+        for (let p = 0; p < 5; p++) {
+            const a = (p / 5) * Math.PI * 2 - Math.PI / 2;
+            const cx = 50 + Math.cos(a) * r * 0.72;
+            const cy = 50 + Math.sin(a) * r * 0.72;
+            const rot = (a * 180 / Math.PI);
+            petals += `<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${r*0.55}" ry="${cr}" `
+                    + `transform="rotate(${rot.toFixed(1)},${cx.toFixed(1)},${cy.toFixed(1)})" `
+                    + `fill="${pal.fill}" stroke="${pal.stroke}" stroke-width="0.8"/>`;
+        }
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}" viewBox="0 0 100 100">`
+             + petals
+             + `<circle cx="50" cy="50" r="9" fill="rgba(255,240,200,0.55)" stroke="rgba(240,210,160,0.4)" stroke-width="0.8"/>`
+             + `</svg>`;
+    }
+
+    for (let i = 0; i < 22; i++) {
+        const sz  = 10 + Math.random() * 13;         // 10–23 px
+        const pal = petalPalettes[Math.floor(Math.random() * petalPalettes.length)];
+        const dur = 11 + Math.random() * 16;          // 11–27 s
+        const del = Math.random() * 18;               // staggered start
+        const drift = (Math.random() - 0.5) * 120;   // horizontal drift px
+
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = [
+            `position:absolute`,
+            `top:-${sz + 10}px`,
+            `left:${Math.random() * 100}%`,
+            `width:${sz}px`,
+            `height:${sz}px`,
+            `animation:petalFall ${dur}s ${del}s linear infinite`,
+            `--drift:${drift}px`,
+            `transform-origin:center`,
+        ].join(';');
+        wrapper.innerHTML = makePetalSVG(pal, sz);
+        container.appendChild(wrapper);
     }
 }
 
@@ -1598,41 +1742,6 @@ function init() {
 document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', init)
     : init();
-
-/* ═══════════════════════════════════════════
-   SAKURA ATMOSPHERE SYSTEM
-═══════════════════════════════════════════ */
-
-function createMistParticles() {
-    const mist = document.getElementById('blossomMist');
-    const count = 40;
-
-    for (let i = 0; i < count; i++) {
-        const p = document.createElement('div');
-        p.classList.add('mist-particle');
-
-        p.style.left = Math.random() * 400 + 'px';
-        p.style.bottom = Math.random() * 120 + 'px';
-        p.style.animationDuration = (Math.random() * 6 + 6) + 's';
-        p.style.animationDelay = Math.random() * 5 + 's';
-
-        mist.appendChild(p);
-    }
-}
-
-function enhancePetals() {
-    const petals = document.querySelectorAll('.petal');
-    petals.forEach(p => {
-        p.style.width = `${Math.random() * 12 + 8}px`;
-        p.style.height = `${Math.random() * 8 + 6}px`;
-        p.style.opacity = Math.random() * 0.6 + 0.4;
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    createMistParticles();
-    enhancePetals();
-});
 </script>
 </body>
 </html>
