@@ -265,18 +265,58 @@
     /* ═══════════════════════════════════════════
        SIDEBAR
     ═══════════════════════════════════════════ */
-    .sidebar { width:270px; flex-shrink:0; position:sticky; top:1.5rem; height:fit-content; }
+    .sidebar {
+        /* Fluid width: grows with font size, never collapses below 200px or exceeds 340px */
+        width: clamp(200px, 18em, 340px);
+        flex-shrink: 0;
+        position: sticky;
+        top: 1.5rem;
+        /* Cap height so it never taller than the viewport and scrolls internally */
+        max-height: calc(100vh - 3rem);
+        display: flex;
+        flex-direction: column;
+    }
     .nav-panel {
         background:linear-gradient(180deg,rgba(45,27,82,0.55) 0%,rgba(18,13,31,0.88) 100%);
-        border:1px solid rgba(139,92,246,0.22); border-radius:20px; padding:1.5rem; backdrop-filter:blur(12px);
+        border:1px solid rgba(139,92,246,0.22); border-radius:20px; padding:1.5rem;
+        backdrop-filter:blur(12px);
+        overflow-y: auto;
+        flex: 1;
+        /* Smooth scrollbar */
+        scrollbar-width: thin;
+        scrollbar-color: rgba(139,92,246,0.4) transparent;
     }
-    .nav-title { font-family:var(--font-accent); font-size:0.7rem; font-weight:600; color:var(--wisteria); letter-spacing:0.25em; text-transform:uppercase; margin-bottom:1.2rem; padding-bottom:0.8rem; border-bottom:1px solid rgba(139,92,246,0.18); }
+    .nav-panel::-webkit-scrollbar { width: 4px; }
+    .nav-panel::-webkit-scrollbar-track { background: transparent; }
+    .nav-panel::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.35); border-radius: 4px; }
+    .nav-title {
+        font-family:var(--font-accent); font-size:0.7rem; font-weight:600; color:var(--wisteria);
+        letter-spacing:0.2em; text-transform:uppercase;
+        margin-bottom:1.2rem; padding-bottom:0.8rem;
+        border-bottom:1px solid rgba(139,92,246,0.18);
+        /* Let it wrap at very large font sizes instead of overflowing */
+        white-space: normal; word-break: break-word;
+    }
     .nav-list { list-style:none; display:flex; flex-direction:column; gap:0.4rem; }
-    .nav-item { padding:0.82rem 1.1rem; border-radius:12px; cursor:pointer; transition:all 0.25s; display:flex; align-items:center; gap:0.75rem; font-weight:500; color:var(--lavender); border:1px solid transparent; font-size:0.88rem; }
+    .nav-item {
+        padding:0.75rem 1rem; border-radius:12px; cursor:pointer; transition:all 0.25s;
+        display:flex; align-items:center; gap:0.65rem;
+        font-weight:500; color:var(--lavender); border:1px solid transparent;
+        font-size:0.88rem;
+        /* Wrap label text instead of clipping; keep icon + count on same row */
+        flex-wrap: wrap;
+    }
     .nav-item:hover { background:rgba(139,92,246,0.18); border-color:rgba(139,92,246,0.28); color:var(--petal-white); }
     .nav-item.active { background:linear-gradient(135deg,rgba(109,40,217,0.4),rgba(139,92,246,0.25)); border-color:var(--amethyst); color:var(--petal-white); box-shadow:0 0 15px var(--glow-soft); }
-    .nav-icon { font-size:1.05rem; width:22px; text-align:center; flex-shrink:0; }
-    .nav-count { margin-left:auto; background:rgba(109,40,217,0.4); padding:0.15rem 0.55rem; border-radius:20px; font-size:0.7rem; font-weight:600; color:var(--lavender); }
+    .nav-icon { font-size:1.05rem; width:1.4em; text-align:center; flex-shrink:0; }
+    .nav-item > span:not(.nav-icon):not(.nav-count) { flex:1; min-width:0; word-break:break-word; }
+    .nav-count {
+        margin-left:auto; flex-shrink:0;
+        background:rgba(109,40,217,0.4); padding:0.15rem 0.5rem;
+        border-radius:20px; font-size:0.7rem; font-weight:600; color:var(--lavender);
+        /* Scale with em so it doesn't shrink relative to label at large sizes */
+        min-width: 1.8em; text-align: center;
+    }
 
     /* ═══════════════════════════════════════════
        AUDIOS SECTION
@@ -486,12 +526,13 @@
     ═══════════════════════════════════════════ */
     @media (max-width:900px) {
         .main-container { flex-direction:column; padding:1.2rem; }
-        .sidebar { width:100%; position:static; }
+        .sidebar { width:100%; max-width:100%; position:static; max-height:none; }
+        .nav-panel { overflow-y:visible; }
         .nav-list {
             flex-direction:row; flex-wrap:wrap;
             justify-content:center; gap:0.5rem;
         }
-        .nav-item { flex-basis:auto; justify-content:center; }
+        .nav-item { flex-basis:auto; justify-content:center; flex-wrap:nowrap; }
         .nav-item .nav-count { display:none; }
     }
     @media (max-width:600px) {
