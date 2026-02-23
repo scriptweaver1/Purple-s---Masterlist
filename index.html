@@ -820,7 +820,9 @@ const state = {
     currentType: 'all',
     searchQuery: '',
     currentView: localStorage.getItem('pj_view') || '1',
-    sortOrder:   localStorage.getItem('pj_sort') || 'newest',
+    sortOrder:   (['newest','oldest','alphabetical'].includes(localStorage.getItem('pj_sort'))
+                    ? localStorage.getItem('pj_sort')
+                    : 'newest'),
     showFavOnly: false,
     favorites:   JSON.parse(localStorage.getItem('pj_favs') || '[]'),
 };
@@ -862,11 +864,13 @@ function toggleFav(id) {
 
 /* ── SORT ────────────────────────────────── */
 function doSort(list) {
-    const a = [...list];
-    if (state.sortOrder === 'newest')      return a.sort((a,b) => new Date(b.date||0) - new Date(a.date||0));
-    if (state.sortOrder === 'oldest')      return a.sort((a,b) => new Date(a.date||0) - new Date(b.date||0));
-    if (state.sortOrder === 'alphabetical') return a.sort((a,b) => (a.title||'').localeCompare(b.title||''));
-    return a;
+    const copy = [...list];
+    const dateOf = entry => entry.date ? new Date(entry.date).getTime() : 0;
+    if (state.sortOrder === 'newest')       return copy.sort((x, y) => dateOf(y) - dateOf(x));
+    if (state.sortOrder === 'oldest')       return copy.sort((x, y) => dateOf(x) - dateOf(y));
+    if (state.sortOrder === 'alphabetical') return copy.sort((x, y) => (x.title||'').localeCompare(y.title||''));
+    // Unknown sort key — fall back to newest
+    return copy.sort((x, y) => dateOf(y) - dateOf(x));
 }
 
 /* ═══════════════════════════════════════════
