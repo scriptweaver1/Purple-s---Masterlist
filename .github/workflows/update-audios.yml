@@ -13,16 +13,18 @@ on:
     paths:
       - 'build_audios.py'
 
+# Grant the workflow permission to write back to the repo
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Check out the repo so we can commit back to it
+      # 1. Check out the repo
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       # 2. Set up Python
       - name: Set up Python
@@ -40,10 +42,9 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add audios.json
-          # Only commit if there are actual changes
           if git diff --cached --quiet; then
             echo "No changes to audios.json — skipping commit"
           else
             git commit -m "chore: auto-update audios.json [$(date -u '+%Y-%m-%d %H:%M UTC')]"
-            git push
+            git push origin HEAD:${{ github.ref_name }}
           fi
