@@ -865,7 +865,15 @@ function toggleFav(id) {
 /* ── SORT ────────────────────────────────── */
 function doSort(list) {
     const copy = [...list];
-    const dateOf = entry => entry.date ? new Date(entry.date).getTime() : 0;
+    const dateOf = entry => {
+        if (!entry.date) return 0;
+        let d = entry.date;
+        // Convert DD/MM/YYYY → YYYY-MM-DD so Safari/Firefox parse it correctly
+        const dm = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (dm) d = `${dm[3]}-${dm[2].padStart(2,'0')}-${dm[1].padStart(2,'0')}`;
+        const t = new Date(d).getTime();
+        return isNaN(t) ? 0 : t;
+    };
     if (state.sortOrder === 'newest')       return copy.sort((x, y) => dateOf(y) - dateOf(x));
     if (state.sortOrder === 'oldest')       return copy.sort((x, y) => dateOf(x) - dateOf(y));
     if (state.sortOrder === 'alphabetical') return copy.sort((x, y) => (x.title||'').localeCompare(y.title||''));
