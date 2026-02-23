@@ -58,10 +58,26 @@ def parse_bool(val) -> bool:
 
 
 def parse_date(val) -> str | None:
+    import re as _re
+    from datetime import datetime as _dt
     s = clean(val)
     if not s:
         return None
-    # Keep only the date portion (drop time if present)
+    # Already ISO YYYY-MM-DD (possibly with time suffix)
+    if _re.match(r'^\d{4}-\d{2}-\d{2}', s):
+        return s[:10]
+    # DD/MM/YYYY or D/M/YYYY — Google Sheets locale format
+    m = _re.match(r'^(\d{1,2})/(\d{1,2})/(\d{4})', s)
+    if m:
+        d, mo, y = m.groups()
+        return f"{y}-{mo.zfill(2)}-{d.zfill(2)}"
+    # Try common fallback formats
+    for fmt in ('%d/%m/%Y', '%m/%d/%Y', '%d-%m-%Y', '%Y/%m/%d'):
+        try:
+            return _dt.strptime(s[:10], fmt).strftime('%Y-%m-%d')
+        except ValueError:
+            pass
+    print(f"  WARNING: unrecognised date format {s!r} — storing as-is")
     return s[:10]
 
 
