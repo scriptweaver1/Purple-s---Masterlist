@@ -16,7 +16,7 @@ from io import StringIO
 #  CONFIGURE THIS — paste your published Google Sheet CSV URL
 #  File → Share → Publish to web → Sheet1 → CSV → Copy link
 # ─────────────────────────────────────────────────────────────
-SHEET_CSV_URL = "YOUR_GOOGLE_SHEET_CSV_URL_HERE"
+SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSKlSNrhpsRg_PxsbX29KisgG3_tOtVBaWnUG3hfYutyZCnln42QQa0uekAQ08BkMdz12UJyGT0pK4K/pub?output=csv"
 OUTPUT_PATH   = "audios.json"
 # ─────────────────────────────────────────────────────────────
 
