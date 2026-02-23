@@ -1,1 +1,49 @@
+name: Update Audio Data
 
+on:
+  # ── Runs automatically every 6 hours ──────────────────────
+  schedule:
+    - cron: '0 */6 * * *'
+
+  # ── Run instantly from the Actions tab (no wait needed) ───
+  workflow_dispatch:
+
+  # ── Also run on every push (catches manual JSON edits) ────
+  push:
+    paths:
+      - 'build_audios.py'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repo so we can commit back to it
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3. Run the build script
+      - name: Build audios.json from Google Sheet
+        run: python build_audios.py
+
+      # 4. Commit and push audios.json if it changed
+      - name: Commit updated audios.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add audios.json
+          # Only commit if there are actual changes
+          if git diff --cached --quiet; then
+            echo "No changes to audios.json — skipping commit"
+          else
+            git commit -m "chore: auto-update audios.json [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+            git push
+          fi
