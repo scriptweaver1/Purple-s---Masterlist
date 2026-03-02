@@ -1233,7 +1233,7 @@ function goRandom() {
 async function loadAudios() {
     dom.grid.innerHTML = `<div class="loading-state"><div class="loading-spinner"></div><p>Loading audio collection…</p></div>`;
     try {
-        const resp = await fetch(CONFIG.dataPath);
+        const resp = await fetch(CONFIG.dataPath + '?v=' + Date.now(), { cache: 'no-cache' });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
         state.audios = data.audios || [];
